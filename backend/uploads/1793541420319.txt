@@ -1,9 +1,0 @@
-A device that makes work easier by changing the size or direction or both of a force.
-Machine.
-A machine is a tool that helps us do tasks by altering how forces are applied.
-Imagine trying to open a tightly sealed jar of pickles.
-Just like how you might use a rubber grip or a towel to make it easier to twist open the jar,
-a machine like a lever or a pulley helps make work easier by changing the size or direction of the force you apply.
-In both cases, the tool, rubber grip towel or machine reduces the effort needed to accomplish the task
-by either increasing your grip or changing the force direction,
-showing how machines simplify tasks by amplifying human effort.

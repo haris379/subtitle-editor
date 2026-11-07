@@ -10,14 +10,14 @@ export const transcribeAudio = async (filePath) => {
   const outDir = path.dirname(wavFile);
 
   try {
-    // Convert video/audio to WAV
+    // Step 1: Convert audio/video to WAV
     execFileSync(
       FFMPEG,
       ["-y", "-i", filePath, "-ar", "16000", "-ac", "1", wavFile],
       { stdio: "inherit" },
     );
 
-    // Generate transcript using Whisper
+    // Step 2: Generate SRT transcript with timestamps
     execFileSync(
       "python",
       [
@@ -29,20 +29,21 @@ export const transcribeAudio = async (filePath) => {
         "--language",
         "en",
         "--output_format",
-        "txt",
+        "srt", // IMPORTANT: Changed from txt to srt
         "--output_dir",
         outDir,
       ],
       { stdio: "inherit" },
     );
 
-    const txtFile = wavFile.replace(/\.wav$/i, ".txt");
+    // Step 3: Read generated SRT file
+    const srtFile = wavFile.replace(/\.wav$/i, ".srt");
 
-    if (!fs.existsSync(txtFile)) {
-      throw new Error(`Transcript file not found: ${txtFile}`);
+    if (!fs.existsSync(srtFile)) {
+      throw new Error(`Transcript file not found: ${srtFile}`);
     }
 
-    const transcript = fs.readFileSync(txtFile, "utf-8");
+    const transcript = fs.readFileSync(srtFile, "utf-8");
 
     return transcript.trim();
   } catch (error) {
