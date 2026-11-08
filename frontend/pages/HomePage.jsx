@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 const HomePage = () => {
@@ -6,29 +7,31 @@ const HomePage = () => {
   const transcript = location.state?.transcript || "";
   const file = location.state?.file;
 
-  const videoUrl = file ? URL.createObjectURL(file) : "";
+  const [videoUrl, setVideoUrl] = useState("");
+  const [subtitleUrl, setSubtitleUrl] = useState("");
 
-  const handleDownload = () => {
-    const plainText = transcript
-      .replace(
-        /\[\d{2}:\d{2}\.\d{3}\s*-->\s*\d{2}:\d{2}\.\d{3}\]\s*/g,
-        ""
-      )
-      .trim();
+  useEffect(() => {
+    if (!file) return;
 
-    const blob = new Blob([plainText], {
-      type: "text/plain",
+    const videoObjectUrl = URL.createObjectURL(file);
+    setVideoUrl(videoObjectUrl);
+
+    const vttContent =
+      "WEBVTT\n\n" +
+      transcript.replace(/(\d{2}:\d{2}:\d{2}),(\d{3})/g, "$1.$2");
+
+    const subtitleBlob = new Blob([vttContent], {
+      type: "text/vtt",
     });
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const vttObjectUrl = URL.createObjectURL(subtitleBlob);
+    setSubtitleUrl(vttObjectUrl);
 
-    link.href = url;
-    link.download = "transcript.txt";
-    link.click();
-
-    URL.revokeObjectURL(url);
-  };
+    return () => {
+      URL.revokeObjectURL(videoObjectUrl);
+      URL.revokeObjectURL(vttObjectUrl);
+    };
+  }, [file, transcript]);
 
   return (
     <div className="p-6">
@@ -37,10 +40,21 @@ const HomePage = () => {
           src={videoUrl}
           controls
           className="w-full max-w-2xl rounded-lg"
-        />
+          loop
+        >
+          {subtitleUrl && (
+            <track
+              src={subtitleUrl}
+              kind="subtitles"
+              srcLang="en"
+              label="English"
+              default
+            />
+          )}
+        </video>
       )}
 
-      {transcript && (
+      {/* {transcript && (
         <div className="mt-6 bg-gray-100 border border-gray-300 p-4 text-left rounded-lg max-w-2xl mx-auto">
           <h3 className="font-semibold text-lg mb-2">
             Transcript:
@@ -57,7 +71,7 @@ const HomePage = () => {
             Download Transcript
           </button>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
