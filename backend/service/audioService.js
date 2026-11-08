@@ -10,14 +10,12 @@ export const transcribeAudio = async (filePath) => {
   const outDir = path.dirname(wavFile);
 
   try {
-    // Step 1: Convert audio/video to WAV
     execFileSync(
       FFMPEG,
       ["-y", "-i", filePath, "-ar", "16000", "-ac", "1", wavFile],
       { stdio: "inherit" },
     );
 
-    // Step 2: Generate SRT transcript with timestamps
     execFileSync(
       "python",
       [
@@ -29,14 +27,13 @@ export const transcribeAudio = async (filePath) => {
         "--language",
         "en",
         "--output_format",
-        "srt", // IMPORTANT: Changed from txt to srt
+        "srt",
         "--output_dir",
         outDir,
       ],
       { stdio: "inherit" },
     );
 
-    // Step 3: Read generated SRT file
     const srtFile = wavFile.replace(/\.wav$/i, ".srt");
 
     if (!fs.existsSync(srtFile)) {
@@ -50,7 +47,6 @@ export const transcribeAudio = async (filePath) => {
     console.error("Audio transcription failed:", error.message);
     throw error;
   } finally {
-    // Remove temporary audio files
     for (const file of [filePath, wavFile]) {
       try {
         if (fs.existsSync(file)) fs.unlinkSync(file);
