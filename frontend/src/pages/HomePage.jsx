@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { parseSRT, srtTimeToSeconds } from "../src/utils/srtUtils";
-
+import { srtTimeToSeconds } from "../utils/srtUtils";
 const HomePage = () => {
   const location = useLocation();
 
